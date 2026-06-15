@@ -69,7 +69,7 @@ add_sorted_once() {
     rest_file="$(mktemp)"
     tmp_file="$(mktemp)"
 
-    grep -vxE '[.]agents/.*' "$file" > "$rest_file" || true
+    grep -vxE '[.]agents/.*' "$file" | awk 'seen || NF { seen = 1; print }' > "$rest_file" || true
 
     {
         {
@@ -275,7 +275,7 @@ EOF
 # before doing project work.
 ##
 install_agents_router() {
-    local read_targets="$STANDARDS_DIR/AGENTS.md"
+    local read_targets="\`$STANDARDS_DIR/AGENTS.md\`"
 
     touch "$PROJECT_AGENTS_FILE"
 
@@ -284,10 +284,10 @@ install_agents_router() {
     fi
 
     if [ -n "${SELECTED_STACK_PATH:-}" ]; then
-        read_targets="$read_targets and $SELECTED_STACK_PATH"
+        read_targets="$read_targets and \`$SELECTED_STACK_PATH\`"
     fi
 
-    if [ -s "$PROJECT_AGENTS_FILE" ]; then
+    if [ -s "$PROJECT_AGENTS_FILE" ] && [ -n "$(tail -c 1 "$PROJECT_AGENTS_FILE")" ]; then
         printf '\n' >> "$PROJECT_AGENTS_FILE"
     fi
 
