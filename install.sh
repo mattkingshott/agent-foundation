@@ -69,7 +69,18 @@ add_sorted_once() {
     rest_file="$(mktemp)"
     tmp_file="$(mktemp)"
 
-    grep -vxE '[.]agents/.*' "$file" | awk 'seen || NF { seen = 1; print }' > "$rest_file" || true
+    grep -vxE '[.]agents/.*' "$file" | awk '
+        seen || NF { seen = 1; lines[++count] = $0 }
+        END {
+            while (count > 0 && lines[count] == "") {
+                count--
+            }
+
+            for (line_index = 1; line_index <= count; line_index++) {
+                print lines[line_index]
+            }
+        }
+    ' > "$rest_file" || true
 
     {
         {
@@ -78,7 +89,6 @@ add_sorted_once() {
         } | awk 'NF && !seen[$0]++' | sort
 
         if [ -s "$rest_file" ]; then
-            printf '\n'
             cat "$rest_file"
         fi
     } > "$tmp_file"
@@ -276,6 +286,7 @@ EOF
 ##
 install_agents_router() {
     local read_targets="\`$STANDARDS_DIR/AGENTS.md\`"
+    local last_two_bytes
 
     touch "$PROJECT_AGENTS_FILE"
 
@@ -287,8 +298,16 @@ install_agents_router() {
         read_targets="$read_targets and \`$SELECTED_STACK_PATH\`"
     fi
 
-    if [ -s "$PROJECT_AGENTS_FILE" ] && [ -n "$(tail -c 1 "$PROJECT_AGENTS_FILE")" ]; then
-        printf '\n' >> "$PROJECT_AGENTS_FILE"
+    if [ -s "$PROJECT_AGENTS_FILE" ]; then
+        if [ -n "$(tail -c 1 "$PROJECT_AGENTS_FILE")" ]; then
+            printf '\n\n' >> "$PROJECT_AGENTS_FILE"
+        else
+            last_two_bytes="$(tail -c 2 "$PROJECT_AGENTS_FILE" | od -An -tx1 | tr -d ' \n')"
+
+            if [ "$last_two_bytes" != "0a0a" ]; then
+                printf '\n' >> "$PROJECT_AGENTS_FILE"
+            fi
+        fi
     fi
 
     printf 'Before doing anything, read %s.\n' "$read_targets" >> "$PROJECT_AGENTS_FILE"
