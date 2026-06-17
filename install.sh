@@ -2,18 +2,18 @@
 set -euo pipefail
 
 ##
-# Installs or updates Codex standards inside the project where this script is run.
+# Installs or updates AI agent foundation inside the project where this script is run.
 #
 # Expected result in the consuming project:
-#   .agents/standards/  A gitignored checkout of mattkingshott/codex-standards.
-#   .agents/skills/     A Codex-discoverable skills location.
-#   AGENTS.md           A small router block pointing Codex at the standards.
+#   .agents/foundation/  A gitignored checkout of mattkingshott/agent-foundation.
+#   .agents/skills/      A AI agent-discoverable skills location.
+#   AGENTS.md            A small router block pointing AI agent at the foundation.
 #
 # The script is designed to be run from a project root via a package/composer
-# script, curl/bootstrap command, or a temporary clone of this standards repo.
+# script, curl/bootstrap command, or a temporary clone of this foundation repo.
 ##
 
-DEFAULT_REPO="https://github.com/mattkingshott/codex-standards.git"
+DEFAULT_REPO="https://github.com/mattkingshott/agent-foundation.git"
 
 ##
 # Configuration.
@@ -21,8 +21,8 @@ DEFAULT_REPO="https://github.com/mattkingshott/codex-standards.git"
 # Each value can be overridden by an environment variable when a project needs
 # a fork, custom install directory, or non-standard AGENTS.md filename.
 ##
-STANDARDS_REPO="${AGENT_STANDARDS_REPO:-}"
-STANDARDS_DIR="${AGENT_STANDARDS_DIR:-.agents/standards}"
+FOUNDATION_REPO="${AGENT_FOUNDATION_REPO:-}"
+FOUNDATION_DIR="${AGENT_FOUNDATION_DIR:-.agents/foundation}"
 SKILLS_DIR="${AGENT_SKILLS_DIR:-.agents/skills}"
 PROJECT_AGENTS_FILE="${AGENT_PROJECT_FILE:-AGENTS.md}"
 PROJECT_STACK="${AGENT_PROJECT_STACK:-}"
@@ -30,21 +30,21 @@ PROJECT_STACK="${AGENT_PROJECT_STACK:-}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 ##
-# Work out which repository should be cloned into .agents/standards.
+# Work out which repository should be cloned into .agents/foundation.
 #
 # Priority:
-#   1. AGENT_STANDARDS_REPO, when explicitly provided.
+#   1. AGENT_FOUNDATION_REPO, when explicitly provided.
 #   2. The origin remote of this script's git checkout, useful for forks.
-#   3. DEFAULT_REPO, the canonical standards repository.
+#   3. DEFAULT_REPO, the canonical foundation repository.
 ##
-if [ -z "$STANDARDS_REPO" ]; then
+if [ -z "$FOUNDATION_REPO" ]; then
     if git -C "$SCRIPT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-        STANDARDS_REPO="$(git -C "$SCRIPT_DIR" config --get remote.origin.url || true)"
+        FOUNDATION_REPO="$(git -C "$SCRIPT_DIR" config --get remote.origin.url || true)"
     fi
 fi
 
-if [ -z "$STANDARDS_REPO" ]; then
-    STANDARDS_REPO="$DEFAULT_REPO"
+if [ -z "$FOUNDATION_REPO" ]; then
+    FOUNDATION_REPO="$DEFAULT_REPO"
 fi
 
 ##
@@ -98,9 +98,9 @@ add_sorted_once() {
 }
 
 ##
-# Return true when the project AGENTS.md already contains the standards router.
+# Return true when the project AGENTS.md already contains the foundation router.
 #
-# Re-running the installer should update standards, not append duplicate router
+# Re-running the installer should update foundation, not append duplicate router
 # instructions or repeatedly ask for the project stack.
 ##
 project_has_stack_reference() {
@@ -108,61 +108,61 @@ project_has_stack_reference() {
 }
 
 ##
-# Clone the standards repository on first run, then fast-forward it on later runs.
+# Clone the foundation repository on first run, then fast-forward it on later runs.
 #
 # The checkout lives inside the consuming project, but is intended to be
-# gitignored so projects do not fight over standards repo contents.
+# gitignored so projects do not fight over foundation repo contents.
 ##
-install_or_update_standards() {
-    mkdir -p "$(dirname "$STANDARDS_DIR")"
+install_or_update_foundation() {
+    mkdir -p "$(dirname "$FOUNDATION_DIR")"
 
-    if [ -d "$STANDARDS_DIR/.git" ]; then
-        git -C "$STANDARDS_DIR" pull --ff-only
+    if [ -d "$FOUNDATION_DIR/.git" ]; then
+        git -C "$FOUNDATION_DIR" pull --ff-only
         return
     fi
 
-    if [ -e "$STANDARDS_DIR" ]; then
+    if [ -e "$FOUNDATION_DIR" ]; then
         cat >&2 <<EOF
-Cannot install standards because '$STANDARDS_DIR' already exists and is not a Git checkout.
-Move it away, remove it, or set AGENT_STANDARDS_DIR to another location.
+Cannot install foundation because '$FOUNDATION_DIR' already exists and is not a Git checkout.
+Move it away, remove it, or set AGENT_FOUNDATION_DIR to another location.
 EOF
         exit 1
     fi
 
-    git clone "$STANDARDS_REPO" "$STANDARDS_DIR"
+    git clone "$FOUNDATION_REPO" "$FOUNDATION_DIR"
 }
 
 ##
-# Ensure the standards checkout is ignored by the consuming project.
+# Ensure the foundation checkout is ignored by the consuming project.
 #
 # Projects should commit their local router and project-specific skills, but not
-# the pulled standards repository itself.
+# the pulled foundation repository itself.
 ##
 install_gitignore_entry() {
-    add_sorted_once ".gitignore" "$STANDARDS_DIR/"
+    add_sorted_once ".gitignore" "$FOUNDATION_DIR/"
 }
 
 ##
-# Expose standards skills through a location Codex actually scans.
+# Expose foundation skills through a location AI agent actually scans.
 #
-# Codex does not discover skills from arbitrary folders like
-# .agents/standards/skills. It discovers repo skills from .agents/skills.
+# AI agent does not discover skills from arbitrary folders like
+# .agents/foundation/skills. It discovers repo skills from .agents/skills.
 #
 # Keep .agents/skills as a real directory so projects can add their own skills
-# later. Each standards skill is exposed as an individual generated symlink
+# later. Each foundation skill is exposed as an individual generated symlink
 # inside it, and each generated symlink is ignored individually.
 ##
 install_skill_links() {
-    local standards_skills="$STANDARDS_DIR/skills"
+    local foundation_skills="$FOUNDATION_DIR/skills"
 
-    if [ ! -d "$standards_skills" ]; then
+    if [ ! -d "$foundation_skills" ]; then
         return
     fi
 
     if [ -L "$SKILLS_DIR" ]; then
         cat >&2 <<EOF
 Cannot expose skills because '$SKILLS_DIR' is a symlink.
-Replace it with a real directory so project-specific skills can live alongside standards skills.
+Replace it with a real directory so project-specific skills can live alongside foundation skills.
 EOF
         exit 1
     fi
@@ -176,14 +176,14 @@ EOF
         exit 1
     fi
 
-    for skill in "$standards_skills"/*; do
+    for skill in "$foundation_skills"/*; do
         [ -d "$skill" ] || continue
 
         local skill_name
         skill_name="$(basename "$skill")"
 
         if [ ! -e "$SKILLS_DIR/$skill_name" ]; then
-            ln -s "../standards/skills/$skill_name" "$SKILLS_DIR/$skill_name"
+            ln -s "../foundation/skills/$skill_name" "$SKILLS_DIR/$skill_name"
         fi
 
         add_sorted_once ".gitignore" "$SKILLS_DIR/$skill_name"
@@ -193,13 +193,13 @@ EOF
 ##
 # Ask which stack applies to the consuming project.
 #
-# The valid options are discovered from .agents/standards/stacks/*.md after the
-# standards repo has been installed or updated. For non-interactive scripts,
+# The valid options are discovered from .agents/foundation/stacks/*.md after the
+# foundation repo has been installed or updated. For non-interactive scripts,
 # AGENT_PROJECT_STACK can be set to either a stack slug like "nuxt-spa" or a
 # filename like "nuxt-spa.md".
 ##
 select_project_stack() {
-    local stacks_dir="$STANDARDS_DIR/stacks"
+    local stacks_dir="$FOUNDATION_DIR/stacks"
     local stack_paths=()
     local stack_names=()
     local stack_path
@@ -280,12 +280,12 @@ EOF
 ##
 # Add a router sentence to the consuming project's AGENTS.md.
 #
-# This is not an include system. It tells Codex, in the project guidance it
-# already discovers, to read the standards guidance and selected stack file
+# This is not an include system. It tells AI agent, in the project guidance it
+# already discovers, to read the foundation guidance and selected stack file
 # before doing project work.
 ##
 install_agents_router() {
-    local read_targets="\`$STANDARDS_DIR/AGENTS.md\`"
+    local read_targets="\`$FOUNDATION_DIR/AGENTS.md\`"
     local last_two_bytes
 
     touch "$PROJECT_AGENTS_FILE"
@@ -316,16 +316,16 @@ install_agents_router() {
 ##
 # Run the installer steps in dependency order.
 ##
-install_or_update_standards
+install_or_update_foundation
 install_gitignore_entry
 install_skill_links
 select_project_stack
 install_agents_router
 
 cat <<EOF
-Agent standards installed.
+Agent foundation installed.
 
-Standards: $STANDARDS_DIR
+Standards: $FOUNDATION_DIR
 Skills:    $SKILLS_DIR
 Router:    $PROJECT_AGENTS_FILE
 EOF
