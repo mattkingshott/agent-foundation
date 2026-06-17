@@ -108,6 +108,22 @@ project_has_stack_reference() {
 }
 
 ##
+# Keep only the runtime files in the installed checkout.
+#
+# A sparse checkout avoids installing project-maintenance files such as this
+# installer, README, LICENSE, and the repo's own .gitignore into consuming
+# projects.
+##
+configure_foundation_checkout() {
+    git -C "$FOUNDATION_DIR" sparse-checkout init --no-cone
+    git -C "$FOUNDATION_DIR" sparse-checkout set --no-cone \
+        /AGENTS.md \
+        /rules/ \
+        /skills/ \
+        /stacks/
+}
+
+##
 # Clone the foundation repository on first run, then fast-forward it on later runs.
 #
 # The checkout lives inside the consuming project, but is intended to be
@@ -117,6 +133,7 @@ install_or_update_foundation() {
     mkdir -p "$(dirname "$FOUNDATION_DIR")"
 
     if [ -d "$FOUNDATION_DIR/.git" ]; then
+        configure_foundation_checkout
         git -C "$FOUNDATION_DIR" pull --ff-only
         return
     fi
@@ -129,7 +146,8 @@ EOF
         exit 1
     fi
 
-    git clone "$FOUNDATION_REPO" "$FOUNDATION_DIR"
+    git clone --filter=blob:none --sparse "$FOUNDATION_REPO" "$FOUNDATION_DIR"
+    configure_foundation_checkout
 }
 
 ##
