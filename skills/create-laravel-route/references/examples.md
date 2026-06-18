@@ -23,7 +23,7 @@ Route::post('/operations/{organization}/contacts', [ContactController::class, 's
 Route::get('/operations/{organization}/contacts/create', [ContactController::class, 'create'])->name('operations.contacts.create');
 Route::get('/operations/{organization}/contacts/{contact}', [ContactController::class, 'edit'])->name('operations.contacts.edit');
 Route::patch('/operations/{organization}/contacts/{contact}', [ContactController::class, 'update'])->name('operations.contacts.update');
-Route::delete('/operations/{organization}/contacts/{contact}', [ContactController::class, 'delete'])->name('operations.contacts.delete');
+Route::delete('/operations/{organization}/contacts/{contact}', [ContactController::class, 'destroy'])->name('operations.contacts.destroy');
 ```
 
 ## Standard Resource Routes (Organization-Scoped)
@@ -44,8 +44,8 @@ Route::get('/operations/{organization}/contacts/{contact}', [ContactController::
 // Update
 Route::patch('/operations/{organization}/contacts/{contact}', [ContactController::class, 'update'])->name('operations.contacts.update');
 
-// Delete (not destroy!)
-Route::delete('/operations/{organization}/contacts/{contact}', [ContactController::class, 'delete'])->name('operations.contacts.delete');
+// Destroy
+Route::delete('/operations/{organization}/contacts/{contact}', [ContactController::class, 'destroy'])->name('operations.contacts.destroy');
 ```
 
 ## Custom Actions
@@ -69,7 +69,7 @@ Route::get('/operations/{organization}/listings/{listing}/photos', [PhotoControl
 Route::post('/operations/{organization}/listings/{listing}/photos', [PhotoController::class, 'store'])->name('operations.photos.store');
 Route::patch('/operations/{organization}/listings/{listing}/photos', [PhotoController::class, 'sort'])->name('operations.photos.sort');
 Route::patch('/operations/{organization}/listings/{listing}/photos/{photo}', [PhotoController::class, 'update'])->name('operations.photos.update');
-Route::delete('/operations/{organization}/listings/{listing}/photos/{photo}', [PhotoController::class, 'delete'])->name('operations.photos.delete');
+Route::delete('/operations/{organization}/listings/{listing}/photos/{photo}', [PhotoController::class, 'destroy'])->name('operations.photos.destroy');
 
 // Nested resource - parent listing, child offers
 Route::get('/operations/{organization}/listings/{listing}/offers', [OfferController::class, 'show'])->name('operations.offers.show');
@@ -77,7 +77,7 @@ Route::get('/operations/{organization}/listings/{listing}/offers/create', [Offer
 Route::post('/operations/{organization}/listings/{listing}/offers', [OfferController::class, 'store'])->name('operations.offers.store');
 Route::get('/operations/{organization}/listings/{listing}/offers/{offer}', [OfferController::class, 'edit'])->name('operations.offers.edit');
 Route::patch('/operations/{organization}/listings/{listing}/offers/{offer}', [OfferController::class, 'update'])->name('operations.offers.update');
-Route::delete('/operations/{organization}/listings/{listing}/offers/{offer}', [OfferController::class, 'delete'])->name('operations.offers.delete');
+Route::delete('/operations/{organization}/listings/{listing}/offers/{offer}', [OfferController::class, 'destroy'])->name('operations.offers.destroy');
 ```
 
 ## Account Routes (User-Scoped, No Organization)

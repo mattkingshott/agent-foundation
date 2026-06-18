@@ -30,7 +30,7 @@ app/Controllers/
 2. **Create controller file** in `app/Controllers/{Domain}/`
 3. **Start with exact structure** from examples
 4. **Extend `App\Types\Controller`**
-5. **Create Request classes** for each method (index, store, update, delete)
+5. **Create Request classes** for each method (index, store, update, destroy)
 6. **Import dependencies** in correct order
 7. **Implement standard CRUD methods** following patterns
 8. **Use actions for logic** - keep controllers thin
@@ -41,7 +41,7 @@ Every resource controller typically has:
 - `index()` - List view
 - `store()` - Submit create form
 - `update()` - Submit edit form
-- `delete()` - Delete resource
+- `destroy()` - Destroy resource
 
 ### Method Signatures
 

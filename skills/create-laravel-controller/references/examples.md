@@ -16,7 +16,7 @@ use App\Resources\ContactResource;
 use App\Requests\Operations\Contact\IndexRequest;
 use App\Requests\Operations\Contact\StoreRequest;
 use App\Requests\Operations\Contact\UpdateRequest;
-use App\Requests\Operations\Contact\DeleteRequest;
+use App\Requests\Operations\Contact\DestroyRequest;
 use App\Types\Controller;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\JsonResponse;
@@ -24,10 +24,10 @@ use Illuminate\Http\JsonResponse;
 final class ContactController extends Controller
 {
     /**
-     * Delete the existing contact.
+     * Destroy the existing contact.
      *
      */
-    public function delete(DeleteRequest $request, Contact $contact) : RedirectResponse
+    public function destroy(DestroyRequest $request, Contact $contact) : RedirectResponse
     {
         $contact->delete();
 
@@ -88,7 +88,7 @@ use App\Models\Organization;
 use App\Requests\{Domain}\{Resource}\IndexRequest;
 use App\Requests\{Domain}\{Resource}\StoreRequest;
 use App\Requests\{Domain}\{Resource}\UpdateRequest;
-use App\Requests\{Domain}\{Resource}\DeleteRequest;
+use App\Requests\{Domain}\{Resource}\DestroyRequest;
 
 // Illuminate facades
 use Illuminate\Support\Facades\App;

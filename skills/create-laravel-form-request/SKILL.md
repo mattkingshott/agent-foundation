@@ -39,7 +39,7 @@ app/Requests/
 
 ## Implementation
 
-1. **Determine the operation** (store, update, delete, etc.)
+1. **Determine the operation** (store, update, destroy, etc.)
 2. **Determine domain and resource** (Operations/Contact, Organizations/Membership, etc.)
 3. **Create request file** in `app/Requests/{Domain}/{Resource}/{Action}Request.php`
 4. **Start with exact structure** from examples

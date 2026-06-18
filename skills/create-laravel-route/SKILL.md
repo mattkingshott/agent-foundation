@@ -10,8 +10,8 @@ You are responsible for creating or modifying routes in domain-specific route fi
 - **Domain organization** - Routes organized by domain in separate files
 - **Single-line definitions** - All routes on one line with chained `->name()`
 - **Index naming** - Index routes use `domain.resources` (no `.index` suffix)
-- **RESTful ordering** - Follow standard order: index, create, store, edit, update, delete
-- **Delete not destroy** - Use `.delete` action name, not `.destroy`
+- **RESTful ordering** - Follow standard order: index, create, store, edit, update, destroy
+- **Destroy naming** - Use `.destroy` action name for resource deletion
 
 ## Domain Route Files
 
@@ -49,7 +49,7 @@ Routes (single line, chained ->name())
 - `api.contacts` - Index (no `.index`)
 - `api.contacts.store` - Store new contact
 - `api.contacts.update` - Update contact
-- `api.contacts.delete` - Delete contact (not `.destroy`)
+- `api.contacts.destroy` - Destroy contact
 
 ## RESTful Action Order
 
@@ -57,7 +57,7 @@ When adding multiple routes for a resource, follow this order:
 1. Index (GET `/resources`)
 3. Store (POST `/resources`)
 5. Update (PATCH `/resources/{resource}`)
-6. Delete (DELETE `/resources/{resource}`)
+6. Destroy (DELETE `/resources/{resource}`)
 7. Custom actions (alphabetically)
 
 ## Implementation
